@@ -1,0 +1,2674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>BCA Result Portal | Maharana Pratap Mahavidyalay</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+body{
+    font-family:Arial,Helvetica,sans-serif;
+    background:
+        radial-gradient(circle at 20% 20%,rgba(0,200,255,.12),transparent 30%),
+        radial-gradient(circle at 80% 80%,rgba(180,0,255,.12),transparent 30%),
+        #050817;
+    color:#fff;
+    min-height:100vh;
+    overflow-x:hidden;
+}
+
+body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    background-image:
+        linear-gradient(rgba(0,255,255,.035) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(0,255,255,.035) 1px,transparent 1px);
+    background-size:40px 40px;
+    z-index:-1;
+}
+
+.hidden{
+    display:none!important;
+}
+
+.container{
+    width:min(1150px,94%);
+    margin:auto;
+}
+
+header{
+    padding:25px 0;
+    text-align:center;
+}
+
+.logo{
+    width:80px;
+    height:80px;
+    margin:auto;
+    border:2px solid #00eaff;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:25px;
+    font-weight:bold;
+    color:#00eaff;
+    box-shadow:
+        0 0 15px #00eaff,
+        inset 0 0 15px rgba(0,234,255,.2);
+    animation:pulse 2s infinite;
+}
+
+header h1{
+    margin-top:18px;
+    font-size:clamp(24px,5vw,42px);
+    color:#ff3bd4;
+    text-shadow:0 0 15px rgba(255,59,212,.7);
+}
+
+header h2{
+    margin-top:8px;
+    color:#00eaff;
+    font-size:clamp(18px,3vw,28px);
+}
+
+header p{
+    margin-top:7px;
+    color:#aaa;
+}
+
+@keyframes pulse{
+    50%{
+        box-shadow:
+        0 0 35px #00eaff,
+        inset 0 0 25px rgba(0,234,255,.3);
+    }
+}
+
+.card{
+    background:rgba(10,15,35,.82);
+    border:1px solid rgba(0,234,255,.3);
+    border-radius:20px;
+    padding:28px;
+    margin:25px 0;
+    box-shadow:
+        0 0 30px rgba(0,234,255,.08),
+        inset 0 0 30px rgba(255,0,200,.025);
+    backdrop-filter:blur(15px);
+}
+
+.card h2{
+    color:#00eaff;
+    margin-bottom:20px;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+    gap:20px;
+}
+
+input,
+select{
+    width:100%;
+    padding:14px;
+    margin:7px 0 15px;
+    border-radius:10px;
+    border:1px solid rgba(0,234,255,.35);
+    background:#080d20;
+    color:#fff;
+    outline:none;
+}
+
+input:focus,
+select:focus{
+    border-color:#00eaff;
+    box-shadow:0 0 12px rgba(0,234,255,.3);
+}
+
+label{
+    color:#b7c5d6;
+    font-size:14px;
+}
+
+button{
+    border:none;
+    padding:12px 20px;
+    border-radius:10px;
+    cursor:pointer;
+    font-weight:bold;
+    color:#fff;
+    background:linear-gradient(90deg,#0077ff,#c000ff);
+    box-shadow:0 0 15px rgba(0,150,255,.25);
+    transition:.25s;
+    margin:4px;
+}
+
+button:hover{
+    transform:translateY(-2px);
+    box-shadow:0 0 25px rgba(0,234,255,.45);
+}
+
+.btn-danger{
+    background:linear-gradient(90deg,#ff1744,#ff006e);
+}
+
+.btn-secondary{
+    background:#18213b;
+}
+
+.message{
+    padding:13px;
+    border-radius:10px;
+    margin:10px 0;
+    display:none;
+}
+
+.message.success{
+    display:block;
+    background:rgba(0,255,150,.1);
+    border:1px solid #00ff9d;
+    color:#00ff9d;
+}
+
+.message.error{
+    display:block;
+    background:rgba(255,0,70,.1);
+    border:1px solid #ff315c;
+    color:#ff6b86;
+}
+
+.message.warning{
+    display:block;
+    background:rgba(255,190,0,.1);
+    border:1px solid #ffd166;
+    color:#ffd166;
+}
+
+.home-actions{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:18px;
+}
+
+.home-actions button{
+    min-height:90px;
+    font-size:18px;
+}
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:15px;
+    margin-bottom:25px;
+}
+
+.stat{
+    padding:22px;
+    border:1px solid rgba(0,234,255,.25);
+    border-radius:15px;
+    text-align:center;
+    background:rgba(0,234,255,.04);
+}
+
+.stat h3{
+    font-size:32px;
+    color:#00eaff;
+}
+
+.stat p{
+    color:#aaa;
+    margin-top:5px;
+}
+
+.subject-row{
+    display:grid;
+    grid-template-columns:1fr 150px 100px;
+    gap:15px;
+    align-items:center;
+    margin-bottom:12px;
+}
+
+.subject-fixed{
+    padding:14px;
+    border-radius:10px;
+    background:#0a1025;
+    border:1px solid rgba(0,234,255,.15);
+}
+
+.subject-marks{
+    margin:0;
+}
+
+.table-wrap{
+    overflow-x:auto;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:20px;
+}
+
+th,td{
+    padding:13px;
+    border:1px solid rgba(0,234,255,.15);
+    text-align:center;
+}
+
+th{
+    color:#00eaff;
+    background:#0b1127;
+}
+
+tr:hover{
+    background:rgba(0,234,255,.035);
+}
+
+.result-header{
+    text-align:center;
+    padding-bottom:20px;
+}
+
+.result-logo{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+}
+
+.mpm{
+    width:75px;
+    height:75px;
+    border-radius:50%;
+    border:2px solid #00eaff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#00eaff;
+    font-weight:bold;
+    font-size:22px;
+    box-shadow:0 0 18px rgba(0,234,255,.4);
+}
+
+.result-header h1{
+    margin-top:15px;
+    color:#ff3bd4;
+}
+
+.result-header h2{
+    color:#00eaff;
+    margin-top:6px;
+}
+
+.result-header p{
+    margin-top:7px;
+    color:#aaa;
+}
+
+.student-info{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:12px;
+    margin:20px 0;
+}
+
+.info-box{
+    padding:15px;
+    background:#090f23;
+    border:1px solid rgba(0,234,255,.15);
+    border-radius:10px;
+}
+
+.result-summary{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:15px;
+    margin-top:20px;
+}
+
+.summary-box{
+    text-align:center;
+    padding:18px;
+    border-radius:15px;
+    background:#0b1127;
+    border:1px solid rgba(0,234,255,.2);
+}
+
+.summary-box p{
+    color:#aaa;
+}
+
+.summary-box h3{
+    color:#00ff9d;
+    font-size:25px;
+    margin-top:5px;
+}
+
+footer{
+    text-align:center;
+    padding:30px 10px;
+    color:#666;
+}
+
+@media(max-width:700px){
+
+    .card{
+        padding:18px;
+    }
+
+    .subject-row{
+        grid-template-columns:1fr;
+        gap:5px;
+    }
+
+    .result-summary{
+        grid-template-columns:1fr;
+    }
+
+    th,td{
+        font-size:13px;
+        padding:9px;
+    }
+
+}
+
+@media print{
+
+    body{
+        background:#fff;
+        color:#000;
+    }
+
+    body::before,
+    header,
+    footer,
+    .no-print{
+        display:none!important;
+    }
+
+    .card{
+        border:none;
+        box-shadow:none;
+        background:#fff;
+        color:#000;
+    }
+
+    .result-header h1,
+    .result-header h2{
+        text-shadow:none;
+    }
+
+    th{
+        background:#eee;
+        color:#000;
+    }
+
+    .info-box,
+    .summary-box{
+        color:#000;
+        border:1px solid #aaa;
+        background:#fff;
+    }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="container">
+
+        <div class="logo">MPM</div>
+
+        <h1>महाराणा प्रताप महाविद्यालय</h1>
+
+        <h2>MAHARANA PRATAP MAHAVIDYALAY</h2>
+
+        <p>Jungle Dhusan, Gorakhpur - 273014</p>
+
+    </div>
+</header>
+
+
+<main class="container">
+
+
+<!-- HOME -->
+
+<section id="homePage" class="card">
+
+    <h2>⚡ BCA DIGITAL EXAMINATION SYSTEM</h2>
+
+    <p style="color:#aaa;margin-bottom:25px;">
+        Student Result Portal
+    </p>
+
+    <div class="home-actions">
+
+        <button onclick="showStudentLogin()">
+            🎓 STUDENT LOGIN
+        </button>
+
+        <button onclick="showStudentRegister()">
+            📝 STUDENT REGISTRATION
+        </button>
+
+        <button onclick="showAdminLogin()">
+            🔐 ADMIN LOGIN
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- STUDENT LOGIN -->
+
+<section id="studentLogin" class="card hidden">
+
+    <h2>🎓 Student Login</h2>
+
+    <div id="studentLoginMessage" class="message"></div>
+
+    <label>Roll / Enrollment Number</label>
+
+    <input
+        type="text"
+        id="loginRoll"
+        placeholder="Enter roll number"
+    >
+
+    <label>Password</label>
+
+    <input
+        type="password"
+        id="loginPassword"
+        placeholder="Enter password"
+    >
+
+    <button onclick="studentLoginAction()">
+        LOGIN
+    </button>
+
+    <button class="btn-secondary" onclick="showStudentRegister()">
+        REGISTER
+    </button>
+
+    <button class="btn-secondary" onclick="goHome()">
+        HOME
+    </button>
+
+</section>
+
+
+<!-- STUDENT REGISTRATION -->
+
+<section id="studentRegister" class="card hidden">
+
+    <h2>📝 BCA Student Registration</h2>
+
+    <div id="registerMessage" class="message"></div>
+
+    <label>Full Name</label>
+
+    <input
+        type="text"
+        id="regName"
+        placeholder="Enter full name"
+    >
+
+    <label>Roll / Enrollment Number</label>
+
+    <input
+        type="text"
+        id="regRoll"
+        placeholder="Enter roll number"
+    >
+
+    <label>Date of Birth</label>
+
+    <input
+        type="date"
+        id="regDob"
+    >
+
+    <label>Program</label>
+
+    <input
+        type="text"
+        value="BCA"
+        disabled
+    >
+
+    <label>Semester</label>
+
+    <select id="regSemester">
+
+        <option value="">Select Semester</option>
+
+        <option value="1st Semester">1st Semester</option>
+        <option value="2nd Semester">2nd Semester</option>
+        <option value="3rd Semester">3rd Semester</option>
+        <option value="4th Semester">4th Semester</option>
+        <option value="5th Semester">5th Semester</option>
+        <option value="6th Semester">6th Semester</option>
+
+    </select>
+
+    <label>Password</label>
+
+    <input
+        type="password"
+        id="regPassword"
+        placeholder="Create password"
+    >
+
+    <button onclick="registerStudent()">
+        CREATE BCA ACCOUNT
+    </button>
+
+    <button class="btn-secondary" onclick="showStudentLogin()">
+        BACK TO LOGIN
+    </button>
+
+</section>
+
+
+<!-- ADMIN LOGIN -->
+
+<section id="adminLogin" class="card hidden">
+
+    <h2>🔐 Admin Login</h2>
+
+    <div id="adminMessage" class="message"></div>
+
+    <label>Username</label>
+
+    <input
+        type="text"
+        id="adminUsername"
+        placeholder="Admin username"
+    >
+
+    <label>Password</label>
+
+    <input
+        type="password"
+        id="adminPassword"
+        placeholder="Admin password"
+    >
+
+    <button onclick="adminLoginAction()">
+        ADMIN LOGIN
+    </button>
+
+    <button class="btn-secondary" onclick="goHome()">
+        HOME
+    </button>
+
+</section>
+
+
+<!-- ADMIN PANEL -->
+
+<section id="adminPanel" class="hidden">
+
+    <div class="card">
+
+        <h2>⚡ ADMIN DASHBOARD</h2>
+
+        <div class="stats">
+
+            <div class="stat">
+                <h3 id="totalStudents">0</h3>
+                <p>Total BCA Students</p>
+            </div>
+
+            <div class="stat">
+                <h3 id="totalResults">0</h3>
+                <p>Published Results</p>
+            </div>
+
+            <div class="stat">
+                <h3 id="pendingResults">0</h3>
+                <p>Pending Results</p>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <h2>📊 Upload / Edit Result</h2>
+
+        <div id="resultMessage" class="message"></div>
+
+        <label>Select Student</label>
+
+        <select
+            id="resultStudent"
+            onchange="loadStudentForResult()"
+        ></select>
+
+        <label>Semester</label>
+
+        <select id="resultSemester">
+
+            <option value="1st Semester">1st Semester</option>
+            <option value="2nd Semester">2nd Semester</option>
+            <option value="3rd Semester">3rd Semester</option>
+            <option value="4th Semester">4th Semester</option>
+            <option value="5th Semester">5th Semester</option>
+            <option value="6th Semester">6th Semester</option>
+
+        </select>
+
+        <div id="subjectsContainer"></div>
+
+        <button onclick="saveResult()">
+            🚀 PUBLISH RESULT
+        </button>
+
+        <button
+            class="btn-secondary"
+            onclick="clearResultForm()"
+        >
+            CLEAR
+        </button>
+
+    </div>
+
+
+    <div class="card">
+
+        <h2>👨‍🎓 Registered BCA Students</h2>
+
+        <input
+            type="text"
+            id="studentSearch"
+            placeholder="Search student or roll number..."
+            oninput="displayStudents()"
+        >
+
+        <div class="table-wrap">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>Name</th>
+                        <th>Roll No.</th>
+                        <th>Program</th>
+                        <th>Semester</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+
+                </thead>
+
+                <tbody id="studentsTable"></tbody>
+
+            </table>
+
+        </div>
+
+        <button onclick="adminLogout()">
+            LOGOUT
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- STUDENT PANEL -->
+
+<section id="studentPanel" class="hidden">
+
+    <div class="card">
+
+        <h2 id="welcomeStudent"></h2>
+
+        <div id="studentResultArea"></div>
+
+        <div class="no-print" style="text-align:center">
+
+            <button onclick="studentLogout()">
+                LOGOUT
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+
+</main>
+
+
+<footer>
+    © Maharana Pratap Mahavidyalay | BCA Digital Examination System
+</footer>
+
+
+<script>
+
+/* =========================================================
+   SUPABASE CONFIG
+========================================================= */
+
+/*
+    ONLY CHANGE THIS URL IF YOU CREATE ANOTHER SUPABASE PROJECT.
+
+    Correct:
+    https://xxxxxxxx.supabase.co
+
+    WRONG:
+    https://xxxxxxxx.supabase.co/rest/v1/RL
+*/
+
+const SUPABASE_URL =
+"https://wiyrejmrlgauqvoapmmc.supabase.co";
+
+
+/*
+    This is your Supabase PUBLISHABLE key.
+
+    Keep this key in frontend.
+    NEVER use service_role / secret key here.
+*/
+
+const SUPABASE_KEY =
+"sb_publishable_noMzak74AkY6aHXGWPoNJg_mNSzHC_6";
+
+
+const db =
+window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+
+/* =========================================================
+   ADMIN
+========================================================= */
+
+const ADMIN_USER = "aks";
+const ADMIN_PASS = "aaaaaa";
+
+
+/* =========================================================
+   SUBJECTS
+========================================================= */
+
+const FIXED_SUBJECTS = [
+
+    "Internet and Java Programming",
+
+    "Oracle and PL/SQL",
+
+    "Computer Network",
+
+    "Software Project Management"
+
+];
+
+const MAX_MARKS = 20;
+const TOTAL_MAX_MARKS = 80;
+
+
+/* =========================================================
+   LOCAL CACHE ONLY
+========================================================= */
+
+let students = [];
+
+
+/* =========================================================
+   PAGE SWITCHING
+========================================================= */
+
+function hideAllLogin(){
+
+    document
+    .getElementById("studentLogin")
+    .classList.add("hidden");
+
+    document
+    .getElementById("studentRegister")
+    .classList.add("hidden");
+
+    document
+    .getElementById("adminLogin")
+    .classList.add("hidden");
+
+}
+
+
+function showStudentLogin(){
+
+    hideAllLogin();
+
+    document
+    .getElementById("studentLogin")
+    .classList.remove("hidden");
+
+}
+
+
+function showStudentRegister(){
+
+    hideAllLogin();
+
+    document
+    .getElementById("studentRegister")
+    .classList.remove("hidden");
+
+}
+
+
+function showAdminLogin(){
+
+    hideAllLogin();
+
+    document
+    .getElementById("adminLogin")
+    .classList.remove("hidden");
+
+}
+
+
+function goHome(){
+
+    hideAllLogin();
+
+    document
+    .getElementById("homePage")
+    .classList.remove("hidden");
+
+}
+
+
+/* =========================================================
+   MESSAGE
+========================================================= */
+
+function showMessage(id,text,type){
+
+    const box =
+    document.getElementById(id);
+
+    if(!box) return;
+
+    box.innerText = text;
+
+    box.className =
+    "message " + type;
+
+    box.style.display = "block";
+
+    setTimeout(()=>{
+
+        box.style.display = "none";
+
+    },5000);
+
+}
+
+
+/* =========================================================
+   PASSWORD HASH
+========================================================= */
+
+async function hashPassword(password){
+
+    const data =
+    new TextEncoder()
+    .encode(password);
+
+    const hash =
+    await crypto.subtle.digest(
+        "SHA-256",
+        data
+    );
+
+    return Array
+        .from(new Uint8Array(hash))
+        .map(
+            b =>
+            b.toString(16)
+            .padStart(2,"0")
+        )
+        .join("");
+
+}
+
+
+/* =========================================================
+   LOAD STUDENTS FROM SUPABASE
+========================================================= */
+
+async function loadStudents(){
+
+    const {
+        data: studentData,
+        error: studentError
+    } = await db
+        .from("students")
+        .select(
+            "id,name,roll,dob,program,semester,created_at"
+        )
+        .eq("program","BCA")
+        .order(
+            "created_at",
+            {ascending:false}
+        );
+
+
+    if(studentError){
+
+        console.error(
+            "Student loading error:",
+            studentError
+        );
+
+        showMessage(
+            "adminMessage",
+            "Could not load students: " +
+            studentError.message,
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    const {
+        data: resultData,
+        error: resultError
+    } = await db
+        .from("results")
+        .select("*");
+
+
+    if(resultError){
+
+        console.error(
+            "Result loading error:",
+            resultError
+        );
+
+    }
+
+
+    students =
+    (studentData || []).map(student => {
+
+        const result =
+        (resultData || [])
+        .filter(
+            r =>
+            Number(r.student_id)
+            === Number(student.id)
+        )
+        .sort(
+            (a,b) =>
+            new Date(b.uploaded_at)
+            -
+            new Date(a.uploaded_at)
+        )[0];
+
+
+        if(result){
+
+            student.result =
+            cloudResultToLocal(result);
+
+        }else{
+
+            student.result = null;
+
+        }
+
+
+        return student;
+
+    });
+
+
+    if(
+        !document
+        .getElementById("adminPanel")
+        .classList
+        .contains("hidden")
+    ){
+
+        loadAdminPanel();
+
+    }
+
+}
+
+
+/* =========================================================
+   CLOUD RESULT → LOCAL DISPLAY FORMAT
+========================================================= */
+
+function cloudResultToLocal(result){
+
+    return {
+
+        semester:
+        result.semester,
+
+        subjects:[
+
+            {
+                name:
+                FIXED_SUBJECTS[0],
+                marks:
+                Number(result.internet_java),
+                max:20
+            },
+
+            {
+                name:
+                FIXED_SUBJECTS[1],
+                marks:
+                Number(result.oracle_plsql),
+                max:20
+            },
+
+            {
+                name:
+                FIXED_SUBJECTS[2],
+                marks:
+                Number(result.computer_network),
+                max:20
+            },
+
+            {
+                name:
+                FIXED_SUBJECTS[3],
+                marks:
+                Number(result.software_project_management),
+                max:20
+            }
+
+        ],
+
+        total:
+        Number(result.total),
+
+        maxTotal:80,
+
+        percentage:
+        Number(result.percentage)
+        .toFixed(2),
+
+        sgpa:
+        Number(result.sgpa)
+        .toFixed(2),
+
+        uploadedAt:
+        result.uploaded_at
+
+    };
+
+}
+
+
+/* =========================================================
+   STUDENT REGISTRATION
+========================================================= */
+
+async function registerStudent(){
+
+    const name =
+    document
+    .getElementById("regName")
+    .value
+    .trim();
+
+    const roll =
+    document
+    .getElementById("regRoll")
+    .value
+    .trim();
+
+    const dob =
+    document
+    .getElementById("regDob")
+    .value;
+
+    const semester =
+    document
+    .getElementById("regSemester")
+    .value;
+
+    const password =
+    document
+    .getElementById("regPassword")
+    .value;
+
+
+    if(
+        !name ||
+        !roll ||
+        !dob ||
+        !semester ||
+        !password
+    ){
+
+        showMessage(
+            "registerMessage",
+            "Please fill all fields.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    if(password.length < 4){
+
+        showMessage(
+            "registerMessage",
+            "Password must contain at least 4 characters.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    const password_hash =
+    await hashPassword(password);
+
+
+    const {
+        error
+    } =
+    await db
+        .from("students")
+        .insert({
+
+            name:name,
+
+            roll:roll,
+
+            dob:dob,
+
+            program:"BCA",
+
+            semester:semester,
+
+            password_hash:password_hash
+
+        });
+
+
+    if(error){
+
+        console.error(error);
+
+        if(
+            error.message
+            .toLowerCase()
+            .includes("duplicate")
+        ){
+
+            showMessage(
+                "registerMessage",
+                "Roll number already registered.",
+                "error"
+            );
+
+        }else{
+
+            showMessage(
+                "registerMessage",
+                "Registration failed: " +
+                error.message,
+                "error"
+            );
+
+        }
+
+        return;
+
+    }
+
+
+    showMessage(
+        "registerMessage",
+        "✓ BCA account created successfully!",
+        "success"
+    );
+
+
+    document
+    .getElementById("regName")
+    .value = "";
+
+    document
+    .getElementById("regRoll")
+    .value = "";
+
+    document
+    .getElementById("regDob")
+    .value = "";
+
+    document
+    .getElementById("regSemester")
+    .value = "";
+
+    document
+    .getElementById("regPassword")
+    .value = "";
+
+
+    await loadStudents();
+
+}
+
+
+/* =========================================================
+   STUDENT LOGIN
+========================================================= */
+
+async function studentLoginAction(){
+
+    const roll =
+    document
+    .getElementById("loginRoll")
+    .value
+    .trim();
+
+    const password =
+    document
+    .getElementById("loginPassword")
+    .value;
+
+
+    if(!roll || !password){
+
+        showMessage(
+            "studentLoginMessage",
+            "Enter roll number and password.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    const password_hash =
+    await hashPassword(password);
+
+
+    const {
+        data:student,
+        error
+    } =
+    await db
+        .from("students")
+        .select(
+            "id,name,roll,dob,program,semester"
+        )
+        .eq("roll",roll)
+        .eq("password_hash",password_hash)
+        .eq("program","BCA")
+        .maybeSingle();
+
+
+    if(error){
+
+        console.error(error);
+
+        showMessage(
+            "studentLoginMessage",
+            "Login error: " +
+            error.message,
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    if(!student){
+
+        showMessage(
+            "studentLoginMessage",
+            "Invalid BCA Roll Number or Password.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    const {
+        data:result
+    } =
+    await db
+        .from("results")
+        .select("*")
+        .eq(
+            "student_id",
+            student.id
+        )
+        .eq(
+            "published",
+            true
+        )
+        .order(
+            "uploaded_at",
+            {ascending:false}
+        )
+        .limit(1)
+        .maybeSingle();
+
+
+    document
+    .getElementById("homePage")
+    .classList
+    .add("hidden");
+
+
+    hideAllLogin();
+
+
+    document
+    .getElementById("studentPanel")
+    .classList
+    .remove("hidden");
+
+
+    document
+    .getElementById("welcomeStudent")
+    .innerText =
+    "Welcome, " +
+    student.name;
+
+
+    showStudentResult(
+        student,
+        result
+    );
+
+}
+
+
+/* =========================================================
+   ADMIN LOGIN
+========================================================= */
+
+function adminLoginAction(){
+
+    const username =
+    document
+    .getElementById("adminUsername")
+    .value
+    .trim();
+
+    const password =
+    document
+    .getElementById("adminPassword")
+    .value;
+
+
+    if(
+        username === ADMIN_USER &&
+        password === ADMIN_PASS
+    ){
+
+        document
+        .getElementById("homePage")
+        .classList
+        .add("hidden");
+
+
+        document
+        .getElementById("adminPanel")
+        .classList
+        .remove("hidden");
+
+
+        loadAdminPanel();
+
+    }else{
+
+        showMessage(
+            "adminMessage",
+            "Invalid admin credentials.",
+            "error"
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   ADMIN PANEL
+========================================================= */
+
+function loadAdminPanel(){
+
+    document
+    .getElementById("totalStudents")
+    .innerText =
+    students.length;
+
+
+    const results =
+    students.filter(
+        student =>
+        student.result
+    ).length;
+
+
+    document
+    .getElementById("totalResults")
+    .innerText =
+    results;
+
+
+    document
+    .getElementById("pendingResults")
+    .innerText =
+    Math.max(
+        0,
+        students.length - results
+    );
+
+
+    loadStudentDropdown();
+
+    displayStudents();
+
+}
+
+
+/* =========================================================
+   STUDENT DROPDOWN
+========================================================= */
+
+function loadStudentDropdown(){
+
+    const select =
+    document
+    .getElementById("resultStudent");
+
+
+    select.innerHTML =
+    `<option value="">
+        Select BCA Student
+    </option>`;
+
+
+    students.forEach(student => {
+
+        const option =
+        document.createElement("option");
+
+
+        option.value =
+        student.id;
+
+
+        option.textContent =
+        student.name +
+        " • " +
+        student.roll;
+
+
+        select.appendChild(option);
+
+    });
+
+}
+
+
+/* =========================================================
+   LOAD STUDENT FOR RESULT
+========================================================= */
+
+function loadStudentForResult(){
+
+    const id =
+    Number(
+        document
+        .getElementById("resultStudent")
+        .value
+    );
+
+
+    if(!id){
+
+        createSubjectFields();
+
+        return;
+
+    }
+
+
+    const student =
+    students.find(
+        s =>
+        Number(s.id)
+        ===
+        id
+    );
+
+
+    if(!student) return;
+
+
+    document
+    .getElementById("resultSemester")
+    .value =
+    student.result
+    ?
+    student.result.semester
+    :
+    student.semester;
+
+
+    if(student.result){
+
+        createSubjectFields(
+            student.result.subjects
+        );
+
+    }else{
+
+        createSubjectFields();
+
+    }
+
+}
+
+
+/* =========================================================
+   SUBJECT FIELDS
+========================================================= */
+
+function createSubjectFields(
+    existingSubjects=[]
+){
+
+    const container =
+    document
+    .getElementById(
+        "subjectsContainer"
+    );
+
+
+    container.innerHTML = "";
+
+
+    FIXED_SUBJECTS.forEach(
+        (subject,index) => {
+
+            let marks = "";
+
+
+            if(existingSubjects[index]){
+
+                marks =
+                existingSubjects[index]
+                .marks;
+
+            }
+
+
+            const row =
+            document
+            .createElement("div");
+
+
+            row.className =
+            "subject-row";
+
+
+            row.innerHTML = `
+
+                <div class="subject-fixed">
+
+                    <strong>
+                        ${index + 1}.
+                    </strong>
+
+                    ${escapeHTML(subject)}
+
+                </div>
+
+                <input
+                    type="number"
+                    class="subject-marks"
+                    min="0"
+                    max="20"
+                    value="${marks}"
+                    placeholder="0 - 20"
+                >
+
+                <div class="subject-fixed">
+
+                    MAX: 20
+
+                </div>
+
+            `;
+
+
+            container.appendChild(row);
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   SAVE / PUBLISH RESULT
+========================================================= */
+
+async function saveResult(){
+
+    const studentId =
+    Number(
+        document
+        .getElementById("resultStudent")
+        .value
+    );
+
+
+    const semester =
+    document
+    .getElementById("resultSemester")
+    .value;
+
+
+    if(!studentId){
+
+        showMessage(
+            "resultMessage",
+            "Select a BCA student first.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    const inputs =
+    document
+    .querySelectorAll(
+        ".subject-marks"
+    );
+
+
+    if(inputs.length !== 4){
+
+        showMessage(
+            "resultMessage",
+            "Subject fields are not loaded correctly.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    const marks = [];
+
+
+    for(let i=0;i<4;i++){
+
+        const value =
+        inputs[i]
+        .value
+        .trim();
+
+
+        const mark =
+        Number(value);
+
+
+        if(
+            value === "" ||
+            !Number.isInteger(mark) ||
+            mark < 0 ||
+            mark > 20
+        ){
+
+            showMessage(
+                "resultMessage",
+                "Marks must be whole numbers from 0 to 20.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        marks.push(mark);
+
+    }
+
+
+    const total =
+    marks[0] +
+    marks[1] +
+    marks[2] +
+    marks[3];
+
+
+    const percentage =
+    Number(
+        (
+            total /
+            TOTAL_MAX_MARKS *
+            100
+        ).toFixed(2)
+    );
+
+
+    const sgpa =
+    Number(
+        calculateSGPA(
+            percentage
+        )
+    );
+
+
+    const {
+        error
+    } =
+    await db
+        .from("results")
+        .upsert(
+
+            {
+
+                student_id:
+                studentId,
+
+                semester:
+                semester,
+
+                internet_java:
+                marks[0],
+
+                oracle_plsql:
+                marks[1],
+
+                computer_network:
+                marks[2],
+
+                software_project_management:
+                marks[3],
+
+                total:
+                total,
+
+                percentage:
+                percentage,
+
+                sgpa:
+                sgpa,
+
+                published:
+                true,
+
+                uploaded_at:
+                new Date().toISOString()
+
+            },
+
+            {
+                onConflict:
+                "student_id,semester"
+            }
+
+        );
+
+
+    if(error){
+
+        console.error(error);
+
+        showMessage(
+            "resultMessage",
+            "Result save failed: " +
+            error.message,
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    showMessage(
+        "resultMessage",
+        "✓ Result published successfully!",
+        "success"
+    );
+
+
+    await loadStudents();
+
+
+    loadAdminPanel();
+
+
+    document
+    .getElementById("resultStudent")
+    .value =
+    studentId;
+
+
+    loadStudentForResult();
+
+}
+
+
+/* =========================================================
+   CLEAR RESULT FORM
+========================================================= */
+
+function clearResultForm(){
+
+    document
+    .getElementById("resultStudent")
+    .value = "";
+
+
+    document
+    .getElementById("resultSemester")
+    .value =
+    "1st Semester";
+
+
+    createSubjectFields();
+
+}
+
+
+/* =========================================================
+   DISPLAY STUDENTS
+========================================================= */
+
+function displayStudents(){
+
+    const table =
+    document
+    .getElementById(
+        "studentsTable"
+    );
+
+
+    if(!table) return;
+
+
+    const search =
+    document
+    .getElementById(
+        "studentSearch"
+    )
+    .value
+    .toLowerCase()
+    .trim();
+
+
+    table.innerHTML = "";
+
+
+    const filtered =
+    students.filter(
+        student =>
+
+        student.name
+        .toLowerCase()
+        .includes(search)
+
+        ||
+
+        student.roll
+        .toLowerCase()
+        .includes(search)
+
+    );
+
+
+    if(filtered.length === 0){
+
+        table.innerHTML = `
+
+            <tr>
+
+                <td colspan="6">
+
+                    No BCA students found.
+
+                </td>
+
+            </tr>
+
+        `;
+
+        return;
+
+    }
+
+
+    filtered.forEach(student => {
+
+        const row =
+        document.createElement("tr");
+
+
+        const status =
+        student.result
+
+        ?
+
+        `<span style="
+            color:#00ff9d;
+            font-weight:bold;
+        ">
+            ● PUBLISHED
+        </span>`
+
+        :
+
+        `<span style="
+            color:#ffd166;
+            font-weight:bold;
+        ">
+            ● PENDING
+        </span>`;
+
+
+        row.innerHTML = `
+
+            <td>
+                ${escapeHTML(student.name)}
+            </td>
+
+            <td>
+                ${escapeHTML(student.roll)}
+            </td>
+
+            <td>
+                BCA
+            </td>
+
+            <td>
+                ${escapeHTML(student.semester)}
+            </td>
+
+            <td>
+                ${status}
+            </td>
+
+            <td>
+
+                <button
+                    onclick="editStudentResult(${student.id})"
+                >
+                    EDIT
+                </button>
+
+                <button
+                    class="btn-danger"
+                    onclick="deleteStudent(${student.id})"
+                >
+                    DELETE
+                </button>
+
+            </td>
+
+        `;
+
+
+        table.appendChild(row);
+
+    });
+
+}
+
+
+/* =========================================================
+   EDIT
+========================================================= */
+
+function editStudentResult(id){
+
+    document
+    .getElementById(
+        "resultStudent"
+    )
+    .value =
+    id;
+
+
+    loadStudentForResult();
+
+
+    window.scrollTo({
+
+        top:0,
+
+        behavior:"smooth"
+
+    });
+
+}
+
+
+/* =========================================================
+   DELETE STUDENT
+========================================================= */
+
+async function deleteStudent(id){
+
+    const student =
+    students.find(
+        s =>
+        Number(s.id)
+        ===
+        Number(id)
+    );
+
+
+    if(!student) return;
+
+
+    if(
+        !confirm(
+            "Delete BCA student " +
+            student.name +
+            "?"
+        )
+    ){
+
+        return;
+
+    }
+
+
+    const {
+        error
+    } =
+    await db
+        .from("students")
+        .delete()
+        .eq(
+            "id",
+            id
+        );
+
+
+    if(error){
+
+        console.error(error);
+
+        alert(
+            "Delete failed: " +
+            error.message
+        );
+
+        return;
+
+    }
+
+
+    alert(
+        "Student deleted successfully."
+    );
+
+
+    await loadStudents();
+
+
+    loadAdminPanel();
+
+}
+
+
+/* =========================================================
+   SHOW STUDENT RESULT
+========================================================= */
+
+function showStudentResult(
+    student,
+    cloudResult
+){
+
+    const area =
+    document
+    .getElementById(
+        "studentResultArea"
+    );
+
+
+    if(!cloudResult){
+
+        area.innerHTML = `
+
+            <div class="card">
+
+                <div class="result-header">
+
+                    <div class="result-logo">
+
+                        <div class="mpm">
+                            MPM
+                        </div>
+
+                        <small>BCA</small>
+
+                    </div>
+
+                    <h1>
+                        महाराणा प्रताप महाविद्यालय
+                    </h1>
+
+                    <h2>
+                        MAHARANA PRATAP MAHAVIDYALAY
+                    </h2>
+
+                    <p>
+                        Jungle Dhusan, Gorakhpur - 273014
+                    </p>
+
+                    <p>
+                        ⚡ BCA EXAMINATION RESULT ⚡
+                    </p>
+
+                </div>
+
+
+                <div class="message warning"
+                     style="display:block">
+
+                    <strong>
+                        ⏳ RESULT PENDING
+                    </strong>
+
+                    <br><br>
+
+                    Your BCA result has not been
+                    published by the Examination Cell.
+
+                </div>
+
+
+                <div class="student-info">
+
+                    <div class="info-box">
+                        <strong>Name:</strong><br>
+                        ${escapeHTML(student.name)}
+                    </div>
+
+                    <div class="info-box">
+                        <strong>Roll No:</strong><br>
+                        ${escapeHTML(student.roll)}
+                    </div>
+
+                    <div class="info-box">
+                        <strong>Program:</strong><br>
+                        BCA
+                    </div>
+
+                    <div class="info-box">
+                        <strong>Semester:</strong><br>
+                        ${escapeHTML(student.semester)}
+                    </div>
+
+                </div>
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    const result =
+    cloudResultToLocal(
+        cloudResult
+    );
+
+
+    let rows = "";
+
+
+    result.subjects.forEach(
+        (subject,index) => {
+
+            rows += `
+
+                <tr>
+
+                    <td>
+                        ${index + 1}
+                    </td>
+
+                    <td>
+                        ${escapeHTML(subject.name)}
+                    </td>
+
+                    <td>
+                        20
+                    </td>
+
+                    <td>
+                        ${subject.marks}
+                    </td>
+
+                    <td>
+                        ${getGrade(subject.marks)}
+                    </td>
+
+                </tr>
+
+            `;
+
+        }
+    );
+
+
+    area.innerHTML = `
+
+        <div class="card result-page">
+
+            <div class="result-header">
+
+                <div class="result-logo">
+
+                    <div class="mpm">
+                        MPM
+                    </div>
+
+                    <small>BCA</small>
+
+                </div>
+
+
+                <h1>
+                    महाराणा प्रताप महाविद्यालय
+                </h1>
+
+                <h2>
+                    MAHARANA PRATAP MAHAVIDYALAY
+                </h2>
+
+                <p>
+                    Jungle Dhusan, Gorakhpur - 273014
+                </p>
+
+                <p>
+                    ⚡ BCA EXAMINATION RESULT ⚡
+                </p>
+
+            </div>
+
+
+            <div class="student-info">
+
+                <div class="info-box">
+
+                    <strong>Name:</strong><br>
+
+                    ${escapeHTML(student.name)}
+
+                </div>
+
+
+                <div class="info-box">
+
+                    <strong>Roll No:</strong><br>
+
+                    ${escapeHTML(student.roll)}
+
+                </div>
+
+
+                <div class="info-box">
+
+                    <strong>Program:</strong><br>
+
+                    BCA
+
+                </div>
+
+
+                <div class="info-box">
+
+                    <strong>Semester:</strong><br>
+
+                    ${escapeHTML(result.semester)}
+
+                </div>
+
+            </div>
+
+
+            <div class="table-wrap">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>S.No.</th>
+
+                            <th>Subject</th>
+
+                            <th>Maximum</th>
+
+                            <th>Obtained</th>
+
+                            <th>Grade</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        ${rows}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <div class="result-summary">
+
+                <div class="summary-box">
+
+                    <p>TOTAL</p>
+
+                    <h3>
+                        ${result.total}/80
+                    </h3>
+
+                </div>
+
+
+                <div class="summary-box">
+
+                    <p>PERCENTAGE</p>
+
+                    <h3>
+                        ${result.percentage}%
+                    </h3>
+
+                </div>
+
+
+                <div class="summary-box">
+
+                    <p>SGPA</p>
+
+                    <h3>
+                        ${result.sgpa}
+                    </h3>
+
+                </div>
+
+            </div>
+
+
+            <div
+                class="no-print"
+                style="
+                    text-align:center;
+                    margin-top:25px;
+                "
+            >
+
+                <button onclick="window.print()">
+
+                    🖨 PRINT / SAVE PDF
+
+                </button>
+
+            </div>
+
+        </div>
+
+    `;
+
+}
+
+
+/* =========================================================
+   GRADE
+========================================================= */
+
+function getGrade(marks){
+
+    if(marks >= 18)
+        return "A+";
+
+    if(marks >= 16)
+        return "A";
+
+    if(marks >= 14)
+        return "B+";
+
+    if(marks >= 12)
+        return "B";
+
+    if(marks >= 10)
+        return "C";
+
+    if(marks >= 8)
+        return "D";
+
+    return "F";
+
+}
+
+
+/* =========================================================
+   SGPA
+========================================================= */
+
+function calculateSGPA(
+    percentage
+){
+
+    const p =
+    Number(percentage);
+
+
+    if(p >= 90)
+        return "10.00";
+
+    if(p >= 80)
+        return "9.00";
+
+    if(p >= 70)
+        return "8.00";
+
+    if(p >= 60)
+        return "7.00";
+
+    if(p >= 50)
+        return "6.00";
+
+    if(p >= 40)
+        return "5.00";
+
+    return "0.00";
+
+}
+
+
+/* =========================================================
+   ADMIN LOGOUT
+========================================================= */
+
+function adminLogout(){
+
+    document
+    .getElementById(
+        "adminPanel"
+    )
+    .classList
+    .add("hidden");
+
+
+    document
+    .getElementById(
+        "homePage"
+    )
+    .classList
+    .remove("hidden");
+
+
+    showStudentLogin();
+
+}
+
+
+/* =========================================================
+   STUDENT LOGOUT
+========================================================= */
+
+function studentLogout(){
+
+    document
+    .getElementById(
+        "studentPanel"
+    )
+    .classList
+    .add("hidden");
+
+
+    document
+    .getElementById(
+        "homePage"
+    )
+    .classList
+    .remove("hidden");
+
+
+    showStudentLogin();
+
+
+    document
+    .getElementById(
+        "loginRoll"
+    )
+    .value = "";
+
+
+    document
+    .getElementById(
+        "loginPassword"
+    )
+    .value = "";
+
+}
+
+
+/* =========================================================
+   ESCAPE HTML
+========================================================= */
+
+function escapeHTML(value){
+
+    return String(value)
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+/* =========================================================
+   START
+========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    async function(){
+
+        showStudentLogin();
+
+        createSubjectFields();
+
+        await loadStudents();
+
+    }
+);
+
+</script>
+
+</body>
+</html>
